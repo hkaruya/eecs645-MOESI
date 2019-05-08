@@ -1,8 +1,9 @@
 #ifndef BUS_H
 #define BUS_H 
 #include <stdarg.h>
+#include <string>
 
-const int MAX_PROC_SIZE = 32; 
+const int NUMBER_OF_PROCESSORS = 4; 
 
 using namespace std; 
 
@@ -25,12 +26,12 @@ typedef enum {
 class Bus{
 	public:
 		Bus(Bus* processor, ...); 
-		bool SIGNALALL(BUS_SIGNAL signal); 
+		bool SIGNALALL(BUS_SIGNAL signal, int index); 
+		virtual BUS_SIGNAL execute(int action, string address); 
 	protected:
 		Bus(); 
-		virtual void RECIEVESIGNAL(BUS_SIGNAL signal) = 0; 
+		virtual bool RECIEVESIGNAL(BUS_SIGNAL signal, int index); 
 	private:
 		Bus** all_processors; 
-		int number_of_processors;
 };
 #endif

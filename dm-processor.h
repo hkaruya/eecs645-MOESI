@@ -9,11 +9,11 @@ using namespace std;
 class DirectMapProcessor: public Bus{
 	public: 
 		DirectMapProcessor(); 
-
+		BUS_SIGNAL execute(int action, string address); 
 	protected: 
-		void RECIEVESIGNAL(BUS_SIGNAL signal); 
+		bool RECIEVESIGNAL(BUS_SIGNAL signal, int index); 
 	private:
 		Cache processor_cache; 
-		state cache_states[LINE_SIZE]; 
+		state cache_state[LINE_SIZE]; 
 };
 #endif
