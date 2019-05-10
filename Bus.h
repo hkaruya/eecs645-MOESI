@@ -1,37 +1,33 @@
 #ifndef BUS_H
 #define BUS_H 
 #include <stdarg.h>
+#include <sstream>
+#include <bitset>
 #include <string>
+#include "protocol.h"
+#include "cache.h"
 
-const int NUMBER_OF_PROCESSORS = 4; 
+const int MAX_NUMBER_OF_PROCESSORS = 32; 
 
 using namespace std; 
 
-typedef enum {
-	MODIFIED,
-	OWNER, 
-	EXCLUSIVE, 
-	SHARED, 
-	INVALID
-}state; 
-
-typedef enum {
-	BusRd, 
-	BusRdX, 
-	BusUpgr, 
-	Flush,
-	None
-}BUS_SIGNAL;
-
 class Bus{
 	public:
-		Bus(Bus* processor, ...); 
-		bool SIGNALALL(BUS_SIGNAL signal, int index); 
-		virtual BUS_SIGNAL execute(int action, string address); 
+		Bus();
+		bool SIGNALALL(BUS_SIGNAL signal, int index, int cycle, Bus* caller); 
+		bool initProcessor(Bus* processor); 
+		virtual BUS_SIGNAL execute(int action, int cycle, string address); 
+	       	virtual string getTag(int index, int cycle); 	
+		static string hexToBinary(string hex_number); 
 	protected:
-		Bus(); 
-		virtual bool RECIEVESIGNAL(BUS_SIGNAL signal, int index); 
+		bool getTagAndIndex(string& tag, int& index, string binary); 
+		bool isDirtyWriteback(string new_tag, string current_tag, state& current_state);
+		virtual BUS_SIGNAL RECIEVESIGNAL(BUS_SIGNAL signal, int index); 
+		virtual bool FLUSH(Bus* source, int index, int cycle);
+
+		//DataCollector*
 	private:
 		Bus** all_processors; 
+		int is_initialized; 
 };
 #endif

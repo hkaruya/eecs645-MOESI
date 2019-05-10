@@ -1,4 +1,4 @@
-#include "lru2-processor.h"
+#include "lru-processor.h"
 using namespace std;
 
 LeastRecentlyUsedProcessor::LeastRecentlyUsedProcessor(){
@@ -13,6 +13,6 @@ BUS_SIGNAL LeastRecentlyUsedProcessor::execute(int action, string address){
 	return None; 
 }
 
-bool LeastRecentlyUsedProcessor::RECIEVESIGNAL(BUS_SIGNAL signal, int index){
-	return true; 
+BUS_SIGNAL LeastRecentlyUsedProcessor::RECIEVESIGNAL(BUS_SIGNAL signal, int index){
+	return None; 
 }

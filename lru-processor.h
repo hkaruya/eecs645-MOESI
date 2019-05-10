@@ -1,5 +1,5 @@
-#ifndef LRU2_PROCESSOR_H
-#define LRU2_PROCESSOR_H
+#ifndef LRU_PROCESSOR_H
+#define LRU_PROCESSOR_H
 #include <iostream>
 #include "Bus.h"
 #include "cache.h"
@@ -12,7 +12,7 @@ class LeastRecentlyUsedProcessor: public Bus{
 		LeastRecentlyUsedProcessor(); 
 		BUS_SIGNAL execute(int action, string address); 
 	protected:
-		bool RECIEVESIGNAL(BUS_SIGNAL signal, int index); 
+		BUS_SIGNAL RECIEVESIGNAL(BUS_SIGNAL signal, int index); 
 	private: 
 		Cache processor_cache[NUMBER_OF_CACHES]; 
 		state cache_state[NUMBER_OF_CACHES][LINE_SIZE]; 

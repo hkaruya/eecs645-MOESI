@@ -4,6 +4,7 @@
 #include <string> 
 using namespace std; 
 
+const int BIT_LENGTH = 32;
 const int MEMORY_SIZE = 16; //IN KILOBYTES
 const int CACHE_LINE = 32; //IN BYTES
 
