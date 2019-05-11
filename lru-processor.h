@@ -10,12 +10,14 @@ using namespace std;
 class LeastRecentlyUsedProcessor: public Bus{
 	public: 
 		LeastRecentlyUsedProcessor(); 
-		BUS_SIGNAL execute(int action, string address); 
+		BUS_SIGNAL execute(int action, int cycle, int& index, string address); 
+		string getTag(int index, int cycle); 
 	protected:
 		BUS_SIGNAL RECIEVESIGNAL(BUS_SIGNAL signal, int index); 
+		bool FLUSH(Bus* source, int index, int cycle); 
 	private: 
 		Cache processor_cache[NUMBER_OF_CACHES]; 
-		state cache_state[NUMBER_OF_CACHES][LINE_SIZE]; 
+		State cache_state[NUMBER_OF_CACHES][LINE_SIZE]; 
 
 };
 #endif

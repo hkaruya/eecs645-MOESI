@@ -1,7 +1,7 @@
 #include "MOESI.h"
 using namespace std; 
 
-BUS_SIGNAL MOESI::processorBasedProtocol(state& current_state, int action){
+BUS_SIGNAL MOESI::processorBasedProtocol(State& current_state, int action){
 	if(MODIFIED == current_state){
 		return None; 
 	}
@@ -46,7 +46,7 @@ BUS_SIGNAL MOESI::processorBasedProtocol(state& current_state, int action){
 	return None; 
 }
 
-BUS_SIGNAL MOESI::busBasedProtocol(BUS_SIGNAL signal, state& current_state){
+BUS_SIGNAL MOESI::busBasedProtocol(BUS_SIGNAL signal, State& current_state){
 	if(MODIFIED == current_state){
 		if(BusRd == signal){
 			current_state = OWNER; 

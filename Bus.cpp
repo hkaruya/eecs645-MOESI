@@ -14,11 +14,21 @@ using namespace std;
 	va_end(variables); 
 }*/
 
-Bus::Bus(){
+Bus::Bus(){	
 	all_processors = new Bus*[MAX_NUMBER_OF_PROCESSORS]; 
 	for(int i = 0; i < MAX_NUMBER_OF_PROCESSORS; i++){
 		all_processors[i] = nullptr; 
 	}
+	collector = nullptr; 
+	is_initialized = -1; 
+}
+
+Bus::Bus(MOESIData* new_collector){
+	all_processors = new Bus*[MAX_NUMBER_OF_PROCESSORS]; 
+	for(int i = 0; i < MAX_NUMBER_OF_PROCESSORS; i++){
+		all_processors[i] = nullptr; 
+	}
+	collector = new_collector; 
 	is_initialized = -1; 
 }
 
@@ -28,6 +38,7 @@ bool Bus::initProcessor(Bus* processor){
 	}
 
 	all_processors[++is_initialized] = processor; 
+	processor->collector = collector; 
 	return true; 
 }
 
@@ -44,7 +55,7 @@ bool Bus::getTagAndIndex(string& tag, int& index, string binary){
 	return true; 
 }
 
-bool Bus::isDirtyWriteback(string new_tag, string current_tag, state& current_state){
+bool Bus::isDirtyWriteback(string new_tag, string current_tag, State& current_state){
 	if(new_tag == current_tag){
 		return false;
 	}
@@ -58,13 +69,16 @@ bool Bus::isDirtyWriteback(string new_tag, string current_tag, state& current_st
 }
 bool Bus::SIGNALALL(BUS_SIGNAL signal, int index, int cycle, Bus* caller){
 	for(int i=0; i < MAX_NUMBER_OF_PROCESSORS; i++){
-		if(nullptr != all_processors[i]){
+		if((nullptr != all_processors[i]) && (caller != all_processors[i])){
 			BUS_SIGNAL sig_return = all_processors[i]->RECIEVESIGNAL(signal, index); 
 			
 			if((Flush == sig_return) || (FlushX == sig_return)){
 				if(FlushX == sig_return){
-					//store data point 
+					if(nullptr != collector) collector->cacheToMemory(all_processors[i]); 
 				}
+
+				if(nullptr != collector) collector->cacheToCache(all_processors[i], caller); 
+
 				caller->FLUSH(all_processors[i], index, cycle); 
 				//store data point
 			}
@@ -74,7 +88,7 @@ bool Bus::SIGNALALL(BUS_SIGNAL signal, int index, int cycle, Bus* caller){
 	return true; 
 }
 
-BUS_SIGNAL Bus::execute(int action, int cycle, string address){ return None; }
+BUS_SIGNAL Bus::execute(int action, int cycle, int& index, string address){ return None; }
 
 string Bus::hexToBinary(string hex_number){
 	stringstream ss;

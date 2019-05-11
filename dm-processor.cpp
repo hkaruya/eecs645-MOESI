@@ -7,24 +7,38 @@ DirectMapProcessor::DirectMapProcessor(){
 	}
 }
 
-BUS_SIGNAL DirectMapProcessor::execute(int action, int cycle, string address){
+BUS_SIGNAL DirectMapProcessor::execute(int action, int cycle, int& index, string address){
 	string tag = "";
-	int index = -1;
 	getTagAndIndex(tag, index, Bus::hexToBinary(address)); 
 	if((READ == action) && (isDirtyWriteback(tag, processor_cache.read(index, cycle), cache_state[index]))){
-		//return Dirty_Writeback
+		if(nullptr != this->collector) this->collector->dirtyWriteback(this); 
 	}
 	
-	processor_cache.write(tag, index, cycle); 
-	return MOESI::processorBasedProtocol(cache_state[index], action); 
+	processor_cache.write(tag, index, cycle);
+
+	State before = cache_state[index]; 
+	BUS_SIGNAL return_signal = MOESI::processorBasedProtocol(cache_state[index], action); 
+	State after = cache_state[index]; 
+
+	if(nullptr != this->collector) this->collector->stateShift(this, before, after); 
+
+	return return_signal; 
 }
 
 BUS_SIGNAL DirectMapProcessor::RECIEVESIGNAL(BUS_SIGNAL signal, int index){
-	//cout<<"signal_recieved"<<endl; 
-	return MOESI::busBasedProtocol(signal, cache_state[index]); 	
+	State before = cache_state[index]; 
+	BUS_SIGNAL return_signal = MOESI::busBasedProtocol(signal, cache_state[index]);
+	State after = cache_state[index]; 
+
+	if(nullptr != this->collector) this->collector->stateShift(this, before, after);
+
+	return return_signal; 	
 }
 
 bool DirectMapProcessor::FLUSH(Bus* source, int index, int cycle){
+	if(nullptr != this->collector) this->collector->stateShift(this, INVALID, SHARED); 
+
+	cache_state[index] = SHARED; 
 	processor_cache.write(source->getTag(index, cycle), index, cycle);
 	return true; 
 }

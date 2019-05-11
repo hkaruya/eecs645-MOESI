@@ -1,10 +1,10 @@
 #ifndef PROTOCOL_H
 #define PROTOCOL_H
 
-using namespace std; 
-
 #define READ 0
 #define WRITE 1
+
+using namespace std; 
 
 typedef enum {
 	MODIFIED,
@@ -12,7 +12,7 @@ typedef enum {
 	EXCLUSIVE, 
 	SHARED, 
 	INVALID
-}state; 
+}State; 
 
 typedef enum {
 	BusRd, 
@@ -25,7 +25,7 @@ typedef enum {
 
 class Protocol{
 	public:
-		virtual BUS_SIGNAL processorBasedProtocol(state& current_state, int action) = 0; 
-		virtual BUS_SIGNAL busBasedProtocol(BUS_SIGNAL signal, state& current_state) = 0; 
+		virtual BUS_SIGNAL processorBasedProtocol(State& current_state, int action) = 0; 
+		virtual BUS_SIGNAL busBasedProtocol(BUS_SIGNAL signal, State& current_state) = 0; 
 };
 #endif

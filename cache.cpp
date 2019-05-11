@@ -15,7 +15,7 @@ Cache::~Cache(){
 }
 
 void Cache::write(string address_tag, int index, int cycle){
-	if((0 > index) || (LINE_SIZE >= index)){
+	if((0 > index) || (index >= LINE_SIZE)){
 		//TODO throw cache exception
 		return; 
 	}
