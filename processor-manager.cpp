@@ -30,6 +30,19 @@ ProcessorManager::ProcessorManager(int dm_processors, int lru_processors){
 
 }
 
+ProcessorManager::~ProcessorManager(){
+	delete collector; 
+	delete processor_bus; 
+	
+	for(int i = 0; i < number_of_processors; i++){
+		delete processors[i]; 
+		delete buffer[i];
+	}
+
+	delete [] processors; 
+	delete [] buffer; 
+}
+
 string** ProcessorManager::commandToProcessor(string** commands){
 	if(!(is_buffer_init)){
 		is_buffer_init = initBuffer(buffer, commands); 

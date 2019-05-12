@@ -18,6 +18,19 @@ MOESIData::MOESIData(int processor_count){
 	}
 }
 
+MOESIData::~MOESIData(){
+	for(unsigned int i = 0; i < number_of_processors; i++){
+		delete invalidations[i]; 
+		for(int j = 0; j < LRU_NUMBER_OF_CACHES; j++){
+			if(nullptr != states_census[i][j]) delete states_census[i][j];
+		}
+		delete[] states_census[i]; 
+	}
+
+	delete[] invalidations;
+	delete[] states_census; 
+}
+
 bool MOESIData::label(void* processor, ProcessorType proc_type, string processor_alias){
 	if(!(aliases.find(processor) == aliases.end())) return false; 
 	if(aliases.size() == number_of_processors) return false; 
@@ -144,9 +157,9 @@ bool MOESIData::initType(void* processor){
 	if(types.find(processor) == types.end()) return false; 
 
 	int assignment_index = assignments[aliases[processor]];
-	if(LRU == types[processor]){
-		states_census[assignment_index] = new DataCollect<string>*[LRU_NUMBER_OF_CACHES];
-		for(int i = 0; i < LRU_NUMBER_OF_CACHES; i++){
+	states_census[assignment_index] = new DataCollect<string>*[LRU_NUMBER_OF_CACHES];
+	for(int i = 0; i < LRU_NUMBER_OF_CACHES; i++){
+		if((0 == i) || (LRU == types[processor])){
 			states_census[assignment_index][i] = new DataCollect<string>;
 		       		
 			states_census[assignment_index][i]->initPoint("M", 0);
@@ -154,21 +167,13 @@ bool MOESIData::initType(void* processor){
 			states_census[assignment_index][i]->initPoint("E", 0);
 			states_census[assignment_index][i]->initPoint("S", 0);
 			states_census[assignment_index][i]->initPoint("I", LINE_SIZE);
-
+		}
+		else{
+			states_census[assignment_index][i] = nullptr; 
 		}
 
 	}
-	
-	if(DirectMapping == types[processor]){
-		states_census[assignment_index] = new DataCollect<string>*[1];
-		states_census[assignment_index][0] = new DataCollect<string>;
-		       		
-		states_census[assignment_index][0]->initPoint("M", 0);
-		states_census[assignment_index][0]->initPoint("O", 0);
-		states_census[assignment_index][0]->initPoint("E", 0);
-		states_census[assignment_index][0]->initPoint("S", 0);
-		states_census[assignment_index][0]->initPoint("I", LINE_SIZE);
-	}
+
 	
 	return true; 	
 }

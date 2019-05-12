@@ -32,6 +32,10 @@ Bus::Bus(MOESIData* new_collector){
 	is_initialized = -1; 
 }
 
+Bus::~Bus(){
+	delete[] all_processors; 
+}
+
 bool Bus::initProcessor(Bus* processor){
 	if(is_initialized == (MAX_NUMBER_OF_PROCESSORS - 1)){
 		return false; 

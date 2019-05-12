@@ -13,7 +13,8 @@ int main(int argc, char** argv){
 	FrontEnd user_interface((argc - 1), processor_commands); 
        user_interface.run(); 	
 	
-	
+
+	delete[] processor_commands; 
 	
 	//int NUMBER_OF_PROCESSORS = 4;
 	//ProcessorManager pm(NUMBER_OF_PROCESSORS, 0); 

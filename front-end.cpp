@@ -96,7 +96,15 @@ FrontEnd::FrontEnd(int processor_count, string* files){
 }
 
 FrontEnd::~FrontEnd(){
-	//TODO clean up memory
+	delete manager;
+
+	for(int i = 0; i < size; i++){
+		delete readers[i]; 
+		delete command_buffer[i];
+	}
+
+	delete[] readers; 
+	delete[] command_buffer;
 }
 
 void FrontEnd::run(){

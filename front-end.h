@@ -13,12 +13,12 @@ class FrontEnd{
 		//@param: processor_count, number of processors needed
 		//@post: initializes processors, user defined and asks users for filenames (used for processors)
 		FrontEnd(int processor_count);
-		
+	
 		//Initializes user interface for program
 		//@param: processor_count, number of processors needed
 		//@param: files, array with name of files to be used by processors
 		FrontEnd(int processor_count, string* files); 
-
+		
 		//Decostructur; used to prevent memory leaks
 		~FrontEnd();
 

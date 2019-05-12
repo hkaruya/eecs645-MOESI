@@ -21,6 +21,8 @@ class Bus{
 		//@param: new_collector
 		Bus(MOESIData* new_collector);
 
+		virtual ~Bus();
+
 		//Signals all processors using this bus
 		//@param: signal 
 		//@param: index, indiciates which index in cache to notify
