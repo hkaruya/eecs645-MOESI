@@ -14,6 +14,8 @@ const int TAG_SIZE = CACHE_LINE - INDEX_SIZE - OFFSET_SIZE;
 
 const int LINE_SIZE = (int)pow(2, INDEX_SIZE); 
 
+const int LRU_NUMBER_OF_CACHES = 2; 
+
 class Cache{
 	public: 
 		Cache(); 

@@ -32,7 +32,7 @@ void Cache::write(string address_tag, int index, int cycle){
 
 string Cache::read(int index, int cycle){	
 	if(nullptr != age_array[index]){
-		*(age_array[index]) = cycle;
+		if(0 < cycle) *(age_array[index]) = cycle;
 	}
 	else{
 		return "0"; 

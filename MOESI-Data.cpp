@@ -6,36 +6,31 @@ MOESIData::MOESIData(int processor_count){
 	number_of_processors = processor_count;
 
 	invalidations = new DataCollect<string>*[number_of_processors];
-	states_census = new DataCollect<string>*[number_of_processors];
+	states_census = new DataCollect<string>**[number_of_processors]; 
 
 	for(unsigned int i = 0; i < number_of_processors; i++){
 		invalidations[i] = new DataCollect<string>;
-		states_census[i] = new DataCollect<string>;
 
 		invalidations[i]->initPoint("M", 0);
 		invalidations[i]->initPoint("O", 0);
 		invalidations[i]->initPoint("E", 0);
 		invalidations[i]->initPoint("S", 0);
-
-		states_census[i]->initPoint("M", 0); 
-		states_census[i]->initPoint("O", 0);
-		states_census[i]->initPoint("E", 0);
-		states_census[i]->initPoint("S", 0);
-		states_census[i]->initPoint("I", LINE_SIZE);
 	}
 }
 
-bool MOESIData::label(void* processor, string processor_alias){
+bool MOESIData::label(void* processor, ProcessorType proc_type, string processor_alias){
 	if(!(aliases.find(processor) == aliases.end())) return false; 
 	if(aliases.size() == number_of_processors) return false; 
 	
 	aliases[processor] = processor_alias; 
+	
+	types[processor] = proc_type; 
 
 	dirty_writeback.initPoint(processor_alias, 0); 
 
 	assignments[processor_alias] = assignments.size() - 1; 
-
-	return true; 
+		
+	return initType(processor); 
 }
 
 bool MOESIData::cacheToCache(void* source, void* destination){
@@ -83,23 +78,24 @@ bool MOESIData::dirtyWriteback(void* processor){
 	return true; 
 }
 
-bool MOESIData::stateShift(void* processor, State prev_state, State curr_state){
+bool MOESIData::stateShift(void* processor, int index, State prev_state, State curr_state){
 	if(aliases.find(processor) == aliases.end()) return false; 
-	
+	if(DirectMapping == types[processor]) index = 0; 
+
 	int processor_assignment = assignments[aliases[processor]];
-	if(MODIFIED == prev_state) states_census[processor_assignment]->decrementPoint("M");
-	if(OWNER == prev_state) states_census[processor_assignment]->decrementPoint("O"); 
-	if(EXCLUSIVE == prev_state) states_census[processor_assignment]->decrementPoint("E");  
-	if(SHARED == prev_state) states_census[processor_assignment]->decrementPoint("S"); 
-	if(INVALID == prev_state) states_census[processor_assignment]->decrementPoint("I"); 
+	if(MODIFIED == prev_state) states_census[processor_assignment][index]->decrementPoint("M");
+	if(OWNER == prev_state) states_census[processor_assignment][index]->decrementPoint("O"); 
+	if(EXCLUSIVE == prev_state) states_census[processor_assignment][index]->decrementPoint("E");  
+	if(SHARED == prev_state) states_census[processor_assignment][index]->decrementPoint("S"); 
+	if(INVALID == prev_state) states_census[processor_assignment][index]->decrementPoint("I"); 
 
 
-	if(MODIFIED == curr_state) states_census[processor_assignment]->incrementPoint("M"); 
-	if(OWNER == curr_state) states_census[processor_assignment]->incrementPoint("O"); 
-	if(EXCLUSIVE == curr_state) states_census[processor_assignment]->incrementPoint("E"); 
-	if(SHARED == curr_state) states_census[processor_assignment]->incrementPoint("S"); 
+	if(MODIFIED == curr_state) states_census[processor_assignment][index]->incrementPoint("M"); 
+	if(OWNER == curr_state) states_census[processor_assignment][index]->incrementPoint("O"); 
+	if(EXCLUSIVE == curr_state) states_census[processor_assignment][index]->incrementPoint("E"); 
+	if(SHARED == curr_state) states_census[processor_assignment][index]->incrementPoint("S"); 
 	if(INVALID == curr_state){
-		states_census[processor_assignment]->incrementPoint("I");
+		states_census[processor_assignment][index]->incrementPoint("I");
 		return invalidation(processor, prev_state); 
 	}	
 
@@ -131,12 +127,51 @@ void MOESIData::print(void** processors){
 		invalidations[processor_index]->printData(printString, false); 
 
 		cout<<"Final State Configuration"<<endl; 
-		states_census[processor_index]->printData(printString, false); 
+		cout<<"Cache [1]: "; 
+		states_census[processor_index][0]->printData(printString, false); 
+		if(LRU == types[processors[i]]){
+			for(int j = 1; j < LRU_NUMBER_OF_CACHES; j++){
+				cout<<"Cache ["<<to_string(j + 1)<<"] ";
+				states_census[processor_index][j]->printData(printString, false); 
+			}
+		}
 
 		cout<<endl; 
 	}
 }
 
+bool MOESIData::initType(void* processor){
+	if(types.find(processor) == types.end()) return false; 
+
+	int assignment_index = assignments[aliases[processor]];
+	if(LRU == types[processor]){
+		states_census[assignment_index] = new DataCollect<string>*[LRU_NUMBER_OF_CACHES];
+		for(int i = 0; i < LRU_NUMBER_OF_CACHES; i++){
+			states_census[assignment_index][i] = new DataCollect<string>;
+		       		
+			states_census[assignment_index][i]->initPoint("M", 0);
+			states_census[assignment_index][i]->initPoint("O", 0);
+			states_census[assignment_index][i]->initPoint("E", 0);
+			states_census[assignment_index][i]->initPoint("S", 0);
+			states_census[assignment_index][i]->initPoint("I", LINE_SIZE);
+
+		}
+
+	}
+	
+	if(DirectMapping == types[processor]){
+		states_census[assignment_index] = new DataCollect<string>*[1];
+		states_census[assignment_index][0] = new DataCollect<string>;
+		       		
+		states_census[assignment_index][0]->initPoint("M", 0);
+		states_census[assignment_index][0]->initPoint("O", 0);
+		states_census[assignment_index][0]->initPoint("E", 0);
+		states_census[assignment_index][0]->initPoint("S", 0);
+		states_census[assignment_index][0]->initPoint("I", LINE_SIZE);
+	}
+	
+	return true; 	
+}
 void MOESIData::printString(string& value){
 	cout<<value; 
 }

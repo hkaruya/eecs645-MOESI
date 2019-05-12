@@ -16,15 +16,16 @@ ProcessorManager::ProcessorManager(int dm_processors, int lru_processors){
 	for(int i = 0; i < number_of_processors; i++){
 		if(i < dm_processors){
 			processors[i] = new DirectMapProcessor(); 
+			collector->label(processors[i], DirectMapping, ("p" + to_string(i)));	
 		}
 		else{
 			processors[i] = new LeastRecentlyUsedProcessor(); 	
+			collector->label(processors[i], LRU, ("p" + to_string(i)));	
 		}		
 		
 		processor_bus->initProcessor(processors[i]); 
 		buffer[i] = new int(-1);
 
-		collector->label(processors[i], ("p" + to_string(i)));	
 	}
 
 }

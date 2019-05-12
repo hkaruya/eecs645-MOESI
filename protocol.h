@@ -23,6 +23,8 @@ typedef enum {
 	None
 }BUS_SIGNAL;
 
+
+//INTERFACE CLASS USED TO ABSTRACT PROTOCAL
 class Protocol{
 	public:
 		virtual BUS_SIGNAL processorBasedProtocol(State& current_state, int action) = 0; 

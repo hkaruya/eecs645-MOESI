@@ -8,12 +8,13 @@
 using namespace std; 
 
 class DirectMapProcessor: public Bus{
-	public: 
+	public:	
+	       	//Initializes direct-map processor	
 		DirectMapProcessor(); 
 		BUS_SIGNAL execute(int action, int cycle, int& index, string address); 
-		string getTag(int index, int cycle);
+		string getTag(int index);
 	protected: 
-		BUS_SIGNAL RECIEVESIGNAL(BUS_SIGNAL signal, int index);
+		BUS_SIGNAL RECIEVESIGNAL(BUS_SIGNAL signal, int index, string tag);
 	       	bool FLUSH(Bus* source, int index, int cycle);	
 	private:
 		Cache processor_cache; 
