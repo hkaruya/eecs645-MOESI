@@ -15,15 +15,39 @@ struct data_point{
 template<typename item>
 class DataCollect{
 	public:
+		//Initializes DataCollect data structure
+		//Utilizes data_point structure where an item is paired with a count
 		DataCollect(); 
+
+		//Initilizes new point with given count, pair
+		//@param: new_point
+		//@param: init_count, starting count for object
 		void initPoint(item new_point, int init_count); 
+
+		//Used to check if value is and element in data set
+		//@param: value, key to search for
+		//@return: true if item is in dataset, false otherwise
 		bool isInData(item value); 
+
+		//Increments value count of given value
+		//@param: value
+		//@return: true once incremented, false if value is not part of dataset
 		bool incrementPoint(item value); 
+
+		//Decrements value count of given value
+		//@param: value
+		//@return: true once item is decremented, false if value is not part of dataset
 		bool decrementPoint(item value); 
 
+		//Sorts the data with in dataset
 		void sortData(); 
+
+		//Prints data within dataset(value: count)
+		//@param: print(item&) function used to print item
+		//@param: vertical, indicates how to print data
 		void printData(void print(item&), bool vertical); 
 	private:
+		//Helper function used in sort function
 		static bool comparer(data_point<item> lhs, data_point<item> rhs);
 
 		vector<data_point<item>> data; 

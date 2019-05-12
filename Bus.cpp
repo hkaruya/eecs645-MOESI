@@ -55,11 +55,12 @@ bool Bus::getTagAndIndex(string& tag, int& index, string binary){
 	return true; 
 }
 
-bool Bus::isDirtyWriteback(string new_tag, string current_tag, State& current_state){
+bool Bus::isDirtyWriteback(Bus* processor, int cache_index, string new_tag, string current_tag, State& current_state){
 	if(new_tag == current_tag){
 		return false;
 	}
 	if((MODIFIED == current_state) || (OWNER == current_state)){
+		collector->stateShift(processor, cache_index, current_state, INVALID); 
 		current_state = INVALID; 
 		return true; 
 	}
@@ -70,7 +71,7 @@ bool Bus::isDirtyWriteback(string new_tag, string current_tag, State& current_st
 bool Bus::SIGNALALL(BUS_SIGNAL signal, int index, int cycle, Bus* caller){
 	for(int i=0; i < MAX_NUMBER_OF_PROCESSORS; i++){
 		if((nullptr != all_processors[i]) && (caller != all_processors[i])){
-			BUS_SIGNAL sig_return = all_processors[i]->RECIEVESIGNAL(signal, index); 
+			BUS_SIGNAL sig_return = all_processors[i]->RECIEVESIGNAL(signal, index, caller->getTag(index)); 
 			
 			if((Flush == sig_return) || (FlushX == sig_return)){
 				if(FlushX == sig_return){
@@ -80,7 +81,7 @@ bool Bus::SIGNALALL(BUS_SIGNAL signal, int index, int cycle, Bus* caller){
 				if(nullptr != collector) collector->cacheToCache(all_processors[i], caller); 
 
 				caller->FLUSH(all_processors[i], index, cycle); 
-				//store data point
+
 			}
 		}
 	}
@@ -100,8 +101,11 @@ string Bus::hexToBinary(string hex_number){
 	return b.to_string(); 
 }
 
-BUS_SIGNAL Bus::RECIEVESIGNAL(BUS_SIGNAL signal, int index){ return None; }
+string Bus::getFlush() const{
+	return flush_value; 
+}
+BUS_SIGNAL Bus::RECIEVESIGNAL(BUS_SIGNAL signal, int index, string tag){ return None; }
 
 bool Bus::FLUSH(Bus* source, int index, int cycle){ return false;} 
 
-string Bus::getTag(int index, int cycle){ return ""; }
+string Bus::getTag(int index){ return ""; }

@@ -20,15 +20,19 @@ FrontEnd::FrontEnd(int processor_count){
 	 */
 
 	int dm_processors, lru_processors; 
-	dm_processors = lru_processors = 0; 
-	
+
 	while((dm_processors + lru_processors) != processor_count){
+		dm_processors = lru_processors = 0; 
+
+		cout<<"[POOL: "<<processor_count<<"] ";
 		cout<<"How many of type (1) processor(s): ";
 		cin>>dm_processors;
-		cout<<"How many of type (2) processor(s): "; 
-		cin>>lru_processors; 
+		if((processor_count - dm_processors) != 0){
+			cout<<"[POOL: "<<(processor_count - dm_processors)<<"] ";
+			cout<<"How many of type (2) processor(s): "; 
+			cin>>lru_processors;
+		} 
 	}
-	
 	cout<<endl; 
 
 	manager = new ProcessorManager(dm_processors, lru_processors);
@@ -79,10 +83,11 @@ FrontEnd::FrontEnd(int processor_count, string* files){
 		cout<<"[POOL: "<<processor_count<<"] ";
 		cout<<"How many of type (1) processor(s): ";
 		cin>>dm_processors;
-
-		cout<<"[POOL: "<<(processor_count - dm_processors)<<"] ";
-		cout<<"How many of type (2) processor(s): "; 
-		cin>>lru_processors; 
+		if((processor_count - dm_processors) != 0){
+			cout<<"[POOL: "<<(processor_count - dm_processors)<<"] ";
+			cout<<"How many of type (2) processor(s): "; 
+			cin>>lru_processors;
+		}
 	}
 	
 	cout<<endl; 

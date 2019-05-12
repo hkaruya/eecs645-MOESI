@@ -10,7 +10,7 @@ DirectMapProcessor::DirectMapProcessor(){
 BUS_SIGNAL DirectMapProcessor::execute(int action, int cycle, int& index, string address){
 	string tag = "";
 	getTagAndIndex(tag, index, Bus::hexToBinary(address)); 
-	if((READ == action) && (isDirtyWriteback(tag, processor_cache.read(index, cycle), cache_state[index]))){
+	if((READ == action) && (isDirtyWriteback(this, 0, tag, processor_cache.read(index, cycle), cache_state[index]))){
 		if(nullptr != this->collector) this->collector->dirtyWriteback(this); 
 	}
 	
@@ -20,29 +20,33 @@ BUS_SIGNAL DirectMapProcessor::execute(int action, int cycle, int& index, string
 	BUS_SIGNAL return_signal = MOESI::processorBasedProtocol(cache_state[index], action); 
 	State after = cache_state[index]; 
 
-	if(nullptr != this->collector) this->collector->stateShift(this, before, after); 
+	if(nullptr != this->collector) this->collector->stateShift(this, 0, before, after); 
 
 	return return_signal; 
 }
 
-BUS_SIGNAL DirectMapProcessor::RECIEVESIGNAL(BUS_SIGNAL signal, int index){
+BUS_SIGNAL DirectMapProcessor::RECIEVESIGNAL(BUS_SIGNAL signal, int index, string tag){
+	if(tag != processor_cache.read(index, -1)) return None; 
+	
 	State before = cache_state[index]; 
 	BUS_SIGNAL return_signal = MOESI::busBasedProtocol(signal, cache_state[index]);
 	State after = cache_state[index]; 
+	
+	if((Flush == return_signal) || (FlushX == return_signal)) this->flush_value = tag;
 
-	if(nullptr != this->collector) this->collector->stateShift(this, before, after);
+	if(nullptr != this->collector) this->collector->stateShift(this, 0, before, after);
 
 	return return_signal; 	
 }
 
 bool DirectMapProcessor::FLUSH(Bus* source, int index, int cycle){
-	if(nullptr != this->collector) this->collector->stateShift(this, INVALID, SHARED); 
+	if(nullptr != this->collector) this->collector->stateShift(this, 0, cache_state[index], SHARED); 
 
 	cache_state[index] = SHARED; 
-	processor_cache.write(source->getTag(index, cycle), index, cycle);
+	processor_cache.write(source->getFlush(), index, cycle);
 	return true; 
 }
 
-string DirectMapProcessor::getTag(int index, int cycle){
-	return processor_cache.read(index, cycle); 
+string DirectMapProcessor::getTag(int index){
+	return processor_cache.read(index, -1); 
 }
