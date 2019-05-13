@@ -13,27 +13,42 @@ BUS_SIGNAL LeastRecentlyUsedProcessor::execute(int action, int cycle, int& index
 	string tag = "";
 	int cache_index = -1; 
 	getTagAndIndex(tag, index, Bus::hexToBinary(address));
-
-	if(READ == action){
-		bool cache_read = false;
-		for(int i = 0; i < LRU_NUMBER_OF_CACHES; i++){
-			string current_tag = processor_cache[i].read(index, -1); 
-			if(current_tag == tag){
-				cache_index = i; 
-				cache_read = true; 
-				break; 
-			}
+	
+	bool index_found = false; 
+	for(int i = 0; i < LRU_NUMBER_OF_CACHES; i++){
+		string current_tag = processor_cache[i].read(index, -1);
+		if(current_tag == tag){
+			cache_index = i;
+			index_found = true; 
 		}
+	}
 
-		if(!cache_read){
-			cache_index = getLRU(index); 
+	if(!index_found){
+		cache_index = getLRU(index); 
+		if(READ == action){
 			if(isDirtyWriteback(this, cache_index, tag, processor_cache[cache_index].read(index, -1), cache_state[cache_index][index])) this->collector->dirtyWriteback(this); 
 		}
 	}
 
-	if(WRITE == action){
-		cache_index = getLRU(index); 
-	}
+	//if(READ == action){
+	//	bool cache_read = false;
+	//	for(int i = 0; i < LRU_NUMBER_OF_CACHES; i++){
+	//		string current_tag = processor_cache[i].read(index, -1); 
+	//		if(current_tag == tag){
+	//			cache_index = i; 
+	//			cache_read = true; 
+	//			break; 
+	//		}
+	//	}
+	//
+	//	if(!cache_read){
+	//		cache_index = getLRU(index); 
+	//	}
+	//}
+	//
+	//if(WRITE == action){
+	//	cache_index = getLRU(index); 
+	//}
 	
 	processor_cache[cache_index].write(tag, index, cycle); 
 

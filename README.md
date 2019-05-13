@@ -10,7 +10,7 @@ This repository contains:
 > REMARK: This program was compiled and tested on a linux based machine using the g++ compiler
 
 Compilation: Type "make all" in terminal to initially compile the program (optional)
-Testing: To test the program with tests files (.tr) run the command make test; For this to work all the .tr files need to be in the test_files directory or this command will not work
+Testing: To test the program with tests files (.tr) run the command make run; For this to work all the .tr files need to be in the test_files directory or this command will not work
 
 You can specify test files manually by compiling the program by itself (using make all command) and specifying .tr test files as arguments to program in the command line. 
 
