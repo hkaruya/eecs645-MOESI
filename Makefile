@@ -3,8 +3,9 @@ FLAGS = -std=c++11 -g -Wall
 template_files = data-collect.h data-collect.hpp
 objects = main.o front-end.o cache.o dm-processor.o lru-processor.o processor-manager.o MOESI.o MOESI-Data.o Bus.o
 
-process_sim: $(objects)
-	g++ $(FLAGS) $(objects) -o process_sim
+
+all: $(objects)
+	g++ $(FLAGS) $(objects) -o cache_sim
 main.o: main.cpp $(template_files)
 	g++ $(FLAGS) -c main.cpp
 front-end.o: front-end.cpp
@@ -24,4 +25,7 @@ MOESI-Data.o: MOESI-Data.cpp data-collect.h
 Bus.o: Bus.cpp
 	g++ $(FLAGS) -c Bus.cpp
 clean: 
-	rm *.o process_sim
+	rm *.o cache_sim
+run: $(objects) 
+	g++ $(FLAGS) $(objects) -o cache_sim
+	 ./cache_sim test_files/*
