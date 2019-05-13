@@ -14,6 +14,9 @@ FrontEnd::FrontEnd(int processor_count){
 		command_buffer[i] = nullptr;
 	       	readers[i] = new ifstream; 	
 	}
+
+	cout<<"Type (1): Direct-Map Single Cache Processor"<<endl;
+	cout<<"Type (2): Least Recently Used Double Cache Processor"<<endl;
 	/*you have the choice between two types of processors
 	 * (1) dm single cache processor
 	 * (2) lru double cache processor
@@ -31,6 +34,13 @@ FrontEnd::FrontEnd(int processor_count){
 			cout<<"[POOL: "<<(processor_count - dm_processors)<<"] ";
 			cout<<"How many of type (2) processor(s): "; 
 			cin>>lru_processors;
+			while(cin.fail()){
+				cin.clear();
+				cin.ignore(4, '\n');
+				cout<<"\tIt appears you entered an invalid input, try again"<<endl; 
+				cout<<"\t> ";
+				cin>>lru_processors;
+			}
 		} 
 	}
 	cout<<endl; 
@@ -70,6 +80,8 @@ FrontEnd::FrontEnd(int processor_count, string* files){
 	       	readers[i] = new ifstream; 
 		readers[i]->open(files[i]); 	
 	}
+	cout<<"Type (1): Direct-Map Single Cache Processor"<<endl;
+	cout<<"Type (2): Least Recently Used Double Cache Processor"<<endl;
 	/*you have the choice between two types of processors
 	 * (1) dm single cache processor
 	 * (2) lru double cache processor
@@ -83,10 +95,25 @@ FrontEnd::FrontEnd(int processor_count, string* files){
 		cout<<"[POOL: "<<processor_count<<"] ";
 		cout<<"How many of type (1) processor(s): ";
 		cin>>dm_processors;
+		while(cin.fail()){
+			cin.clear();
+			cin.ignore(4, '\n');
+			cout<<"\tIt appears you entered an invalid input, try again"<<endl; 
+			cout<<"\t> ";
+			cin>>dm_processors; 
+		}
+
 		if((processor_count - dm_processors) != 0){
 			cout<<"[POOL: "<<(processor_count - dm_processors)<<"] ";
 			cout<<"How many of type (2) processor(s): "; 
 			cin>>lru_processors;
+			while(cin.fail()){
+				cin.clear();
+				cin.ignore(4, '\n');
+				cout<<"\tIt appears you entered an invalid input, try again"<<endl; 
+				cout<<"\t> ";
+				cin>>lru_processors;
+			}
 		}
 	}
 	
@@ -115,7 +142,8 @@ void FrontEnd::run(){
 }
 
 void FrontEnd::welcome(){
-	cout<<"WELCOME [FOR NOW]"<<endl; 
+	cout<<"~WELCOME TO MY CACHE SIMULATOR~"<<endl;
+	cout<<"[By: HERBERT ARUYA]"<<endl; 
 }
 
 void FrontEnd::printCollectedData(){
