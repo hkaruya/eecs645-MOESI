@@ -13,7 +13,7 @@ void DataCollect<item>::initPoint(item new_point, int init_count){
 }
 
 template<typename item>
-bool DataCollect<item>::isInData(item value){
+bool DataCollect<item>::isInData(item value) const{
 	for(unsigned int i = 0; i < data.size(); i++){
 		if(value == data[i].point){
 			return true; 
@@ -67,4 +67,23 @@ void DataCollect<item>::printData(void print(item&), bool vertical){
 template<typename item>
 bool DataCollect<item>::comparer(data_point<item> lhs, data_point<item> rhs){
 	return (lhs.point < rhs.point); 
+}
+
+template<typename item>
+int DataCollect<item>::getCount(item value) const{
+	if(!(isInData(value))) return -1; 
+
+	for(unsigned int i = 0; i < data.size(); i++){
+		if(value == data[i].point){
+			return data[i].count;
+		}
+	}
+	return -1; 
+}
+
+template<typename item>
+int DataCollect<item>::returnSum(item value, int added_value){
+	if(!(isInData(value))) return -1; 
+
+	return (getCount(value) + added_value);
 }

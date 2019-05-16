@@ -127,8 +127,22 @@ void MOESIData::print(void** processors){
 	mem_transfers.printData(printString, false);
 	cout<<endl;
 	
-	cout<<"Dirty Writeback "<<endl; 
-	dirty_writeback.printData(printString, false); 
+	cout<<"Dirty Writeback "<<endl;
+	for(unsigned int i = 0; i < number_of_processors; i++){
+		string proc_name = aliases[processors[i]];
+		int processor_index = assignments[aliases[processors[i]]];
+		int total_sum =  states_census[processor_index][0]->getCount("M") + states_census[processor_index][0]->getCount("O");
+		
+		if(LRU == types[processors[i]]){
+			for(unsigned int j = 1; j < LRU_NUMBER_OF_CACHES; j++){
+				total_sum += states_census[processor_index][j]->getCount("M") + states_census[processor_index][j]->getCount("O");
+			}
+		}
+		cout<<proc_name + ": "<<dirty_writeback.returnSum(proc_name, total_sum)<<"  ";
+	}
+	cout<<endl; 
+
+	//dirty_writeback.printData(printString, false); 
 	cout<<endl;
 
 	for(unsigned int i = 0; i < number_of_processors; i++){

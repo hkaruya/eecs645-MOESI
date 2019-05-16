@@ -27,7 +27,7 @@ class DataCollect{
 		//Used to check if value is and element in data set
 		//@param: value, key to search for
 		//@return: true if item is in dataset, false otherwise
-		bool isInData(item value); 
+		bool isInData(item value) const; 
 
 		//Increments value count of given value
 		//@param: value
@@ -46,6 +46,15 @@ class DataCollect{
 		//@param: print(item&) function used to print item
 		//@param: vertical, indicates how to print data
 		void printData(void print(item&), bool vertical); 
+
+		//Returns count of value
+		//@param: item
+		int getCount(item value) const; 
+		
+		//Returns the count of value summed with added value
+		//@param: value
+		//@param: added_value
+		int returnSum(item value, int added_value);
 	private:
 		//Helper function used in sort function
 		static bool comparer(data_point<item> lhs, data_point<item> rhs);
